@@ -21,27 +21,24 @@ class AppFixtures extends Fixture
     {
         $faker = \Faker\Factory::create('fr_FR');
 
-        for ($i = 0; $i < 5; $i++) {
-            $user = new User();
+        $user = new User();
 
-            $user->setUsername($faker->unique()->userName);
-            $user->setPassword($this->encoder->encodePassword($user, 'password'));
-            $user->setEmail($faker->email);
+        $user->setUsername("anonymous");
+        $user->setPassword($this->encoder->encodePassword($user, 'password'));
+        $user->setEmail($faker->email);
 
-            $limit = random_int(1, 3);
+        $manager->persist($user);
 
-            for ($j = 0; $j < $limit; $j++) {
-                $task = new Task();
+        for ($j = 0; $j < 10; $j++) {
+            $task = new Task();
 
-                $task->setCreatedAt(new \DateTime());
-                $task->setTitle($faker->sentence(5, true));
-                $task->setContent($faker->text(200));
-                $task->toggle(random_int(0, 1));
+            $task->setCreatedAt(new \DateTime());
+            $task->setTitle($faker->sentence(5, true));
+            $task->setContent($faker->text(200));
+            $task->toggle(random_int(0, 1));
+            $task->setUser($user);
 
-                $manager->persist($task);
-            }
-
-            $manager->persist($user);
+            $manager->persist($task);
         }
 
         $manager->flush();
