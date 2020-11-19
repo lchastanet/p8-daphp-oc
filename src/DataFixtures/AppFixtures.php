@@ -26,6 +26,7 @@ class AppFixtures extends Fixture
         $user->setUsername("anonymous");
         $user->setPassword($this->encoder->encodePassword($user, 'password'));
         $user->setEmail($faker->email);
+        $user->setRoles(['ROLE_USER']);
 
         $manager->persist($user);
 
@@ -40,6 +41,15 @@ class AppFixtures extends Fixture
 
             $manager->persist($task);
         }
+
+        $user = new User();
+
+        $user->setUsername("admin");
+        $user->setPassword($this->encoder->encodePassword($user, 'admin'));
+        $user->setEmail($faker->email);
+        $user->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($user);
 
         $manager->flush();
     }
