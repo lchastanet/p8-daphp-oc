@@ -14,9 +14,13 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks", name="task_list")
      */
-    public function listAction()
+    public function listAction(Request $request)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findAll()]);
+        if (null !== $request->query->get('isDone') && $request->query->get('isDone') == true) {
+            return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findBy(["isDone" => true])]);
+        }
+
+        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findBy(["isDone" => false])]);
     }
 
     /**
@@ -92,7 +96,6 @@ class TaskController extends AbstractController
             $task->getUser()->getUsername() === "anonymous" &&
             !in_array("ROLE_ADMIN", $security->getUser()->getRoles())
         ) {
-
             $this->addFlash('error', 'Vous n\'avez pas la permission d\'effectuer cette action.');
 
             return $this->redirectToRoute('task_list');
