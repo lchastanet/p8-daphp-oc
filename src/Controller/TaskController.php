@@ -84,8 +84,20 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(Task $task, Security $security)
     {
+        if (
+            $task->getUser() !== $security->getUser() &&
+            $task->getUser()->getUsername() !== "anonymous" ||
+            $task->getUser()->getUsername() === "anonymous" &&
+            !in_array("ROLE_ADMIN", $security->getUser()->getRoles())
+        ) {
+
+            $this->addFlash('error', 'Vous n\'avez pas la permission d\'effectuer cette action.');
+
+            return $this->redirectToRoute('task_list');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
