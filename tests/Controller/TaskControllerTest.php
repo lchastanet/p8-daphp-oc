@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Task;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -64,5 +65,62 @@ class TaskControllerTest extends WebTestCase
 
     public function testEditAction()
     {
+        $client = static::createClient();
+
+        $entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $tasks = $entityManager
+            ->getRepository(Task::class)
+            ->findAll();
+
+        $task = end($tasks);
+
+        $client->request('GET', '/tasks/' . $task->getId() . '/edit');
+
+        $this->assertSame(302, $client->getResponse()->getStatusCode());
+
+        $loginUtility = new LoginUtility($client);
+
+        $loginUtility->login();
+
+        $crawler = $client->request('GET', '/tasks/' . $task->getId() . '/edit');
+
+        $token = $crawler->filter('input[name="task[_token]"]')->extract(array('value'))[0];
+
+        $client->request('POST', '/tasks/' . $task->getId() . '/edit', [
+            'task' => [
+                'title' => $task->getTitle(),
+                'content' => $task->getContent(),
+                '_token' => $token
+            ]
+        ]);
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+
+        $crawler = $client->followRedirect();
+
+        $this->assertSame($task->getTitle(), $crawler->filter('h4 a')->last()->text());
+        $this->assertSame($task->getContent(), $crawler->filter('.caption p')->last()->text());
+    }
+
+    public function testToggleTaskAction()
+    {
+        $client = static::createClient();
+
+        $entityManager = $client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+
+        $tasks = $entityManager
+            ->getRepository(Task::class)
+            ->findAll();
+
+        $task = end($tasks);
+
+        $client->request('GET', '/tasks/' . $task->getId() . '/toggle');
+
+        $this->assertSame(302, $client->getResponse()->getStatusCode());
     }
 }
