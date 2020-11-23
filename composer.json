@@ -1,9 +1,9 @@
 {
     "name": "friexo/p8-daphp-oc",
     "description": "final project for the application developer training at openclassrooms",
-    "version": "0.1",
+    "version": "0.1.0",
     "type": "project",
-    "license": "proprietary",
+    "license": "Apache License 2.0",
     "require": {
         "php": ">=7.1.3",
         "ext-ctype": "*",
