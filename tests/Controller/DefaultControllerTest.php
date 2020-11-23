@@ -10,9 +10,12 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
-        //$this->assertContains('Bienvenue sur Todo List', $crawler->filter('h1'));
+
+        $client->followRedirect();
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }
