@@ -7,21 +7,26 @@ use App\Form\TaskType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 
 class TaskController extends AbstractController
 {
     /**
      * @Route("/tasks", name="task_list")
      */
-    public function listAction()
+    public function listAction(Request $request)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findAll()]);
+        if (null !== $request->query->get('isDone') && $request->query->get('isDone') == true) {
+            return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findBy(["isDone" => true])]);
+        }
+
+        return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findBy(["isDone" => false])]);
     }
 
     /**
      * @Route("/tasks/create", name="task_create")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, Security $security)
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -29,6 +34,8 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $task->setUser($security->getUser());
+
             $em = $this->getDoctrine()->getManager();
 
             $em->persist($task);
@@ -81,8 +88,19 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(Task $task, Security $security)
     {
+        if (
+            $task->getUser() !== $security->getUser() &&
+            $task->getUser()->getUsername() !== "anonymous" ||
+            $task->getUser()->getUsername() === "anonymous" &&
+            !in_array("ROLE_ADMIN", $security->getUser()->getRoles())
+        ) {
+            $this->addFlash('error', 'Vous n\'avez pas la permission d\'effectuer cette action.');
+
+            return $this->redirectToRoute('task_list');
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
