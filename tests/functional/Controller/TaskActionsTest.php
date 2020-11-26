@@ -133,8 +133,4 @@ class TaskActionsTest extends WebTestCase
 
         $this->assertSame('Superbe ! La tâche ' . $task->getTitle() . ' a bien été marquée comme faite.', $crawler->filter('.alert-success')->text(null, true));
     }
-
-    public function testDeleteTaskAction()
-    {
-    }
 }

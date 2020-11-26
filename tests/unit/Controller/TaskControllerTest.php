@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\unit\Controller;
 
 use App\Entity\Task;
 use App\Tests\LoginUtility;
