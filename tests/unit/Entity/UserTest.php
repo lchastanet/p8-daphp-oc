@@ -11,9 +11,9 @@ class UserTest extends WebTestCase
     public function testId()
     {
         $user = new User();
-        $id = null;
+        $idTest = null;
 
-        $this->assertEquals($id, $user->getId());
+        $this->assertEquals($idTest, $user->getId());
     }
 
     public function testUsername()

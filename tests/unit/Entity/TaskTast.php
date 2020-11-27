@@ -11,9 +11,9 @@ class TaskTest extends TestCase
     public function testId()
     {
         $task = new Task();
-        $id = null;
+        $idTest = null;
 
-        $this->assertEquals($id, $task->getId());
+        $this->assertEquals($idTest, $task->getId());
     }
 
     public function testCreatedAt()
