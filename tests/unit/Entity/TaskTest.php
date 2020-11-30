@@ -20,9 +20,8 @@ class TaskTest extends TestCase
     {
         $task = new Task();
         $date = new \DateTime();
-        $createdAt = $date;
 
-        $task->setCreatedAt($createdAt);
+        $task->setCreatedAt($date);
         $this->assertEquals($date, $task->getCreatedAt());
     }
 
