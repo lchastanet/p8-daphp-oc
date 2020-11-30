@@ -6,7 +6,7 @@ use App\Entity\Task;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TaskControllerTest extends WebTestCase
+class TaskActionsTest extends WebTestCase
 {
     public function testListAction()
     {
@@ -122,5 +122,15 @@ class TaskControllerTest extends WebTestCase
         $client->request('GET', '/tasks/' . $task->getId() . '/toggle');
 
         $this->assertSame(302, $client->getResponse()->getStatusCode());
+
+        $loginUtility = new LoginUtility($client);
+
+        $loginUtility->login();
+
+        $client->request('GET', '/tasks/' . $task->getId() . '/toggle');
+
+        $crawler = $client->followRedirect();
+
+        $this->assertSame('Superbe ! La tâche ' . $task->getTitle() . ' a bien été marquée comme faite.', $crawler->filter('.alert-success')->text(null, true));
     }
 }
