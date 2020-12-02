@@ -51,6 +51,17 @@ class AppFixtures extends Fixture
 
         $manager->persist($user);
 
+        for ($j = 0; $j < 5; $j++) {
+            $user = new User();
+
+            $user->setUsername($faker->userName);
+            $user->setPassword($this->encoder->encodePassword($user, 'password'));
+            $user->setEmail($faker->email);
+            $user->setRoles(['ROLE_USER']);
+
+            $manager->persist($user);
+        }
+
         $manager->flush();
     }
 }
