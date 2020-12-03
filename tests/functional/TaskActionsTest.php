@@ -8,13 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TaskActionsTest extends WebTestCase
 {
-    public function testListAction()
+    public function testListActionAsAdmin()
     {
         $client = static::createClient();
-
-        $client->request('GET', '/tasks');
-
-        $this->assertSame(302, $client->getResponse()->getStatusCode());
 
         $loginUtility = new LoginUtility($client);
 
@@ -22,18 +18,45 @@ class TaskActionsTest extends WebTestCase
 
         $crawler = $client->request('GET', '/tasks');
 
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('Créer une tâche', $crawler->text(null, true));
 
         $this->assertStringContainsString('Créer un utilisateur', $crawler->text(null, true));
     }
 
-    public function testCreateAction()
+    public function testListActionAsUser()
     {
         $client = static::createClient();
 
-        $client->request('GET', '/tasks/create');
+        $loginUtility = new LoginUtility($client);
 
-        $this->assertSame(302, $client->getResponse()->getStatusCode());
+        $loginUtility->login('anonymous');
+
+        $crawler = $client->request('GET', '/tasks');
+
+        $this->assertStringContainsString('Créer une tâche', $crawler->text(null, true));
+
+        $this->assertNotEquals('Créer un utilisateur', $crawler->text(null, true));
+    }
+
+    public function testDoneListAction()
+    {
+        $client = static::createClient();
+
+        $loginUtility = new LoginUtility($client);
+
+        $loginUtility->login();
+
+        $crawler = $client->request('GET', '/tasks?isDone=true');
+
+        $this->assertStringContainsString('Créer une tâche', $crawler->text(null, true));
+
+        $this->assertStringContainsString('Créer un utilisateur', $crawler->text(null, true));
+    }
+
+
+    public function testCreateAction()
+    {
+        $client = static::createClient();
 
         $loginUtility = new LoginUtility($client);
 
@@ -41,26 +64,20 @@ class TaskActionsTest extends WebTestCase
 
         $crawler = $client->request('GET', '/tasks/create');
 
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $createTaskForm = $crawler->selectButton("Ajouter")->form();
+        $titleTest = 'Un titre';
+        $contentTest = 'Un contenu intéressant';
 
-        $title = 'Un titre';
-        $content = 'Un super contenu!';
-        $token = $crawler->filter('input[name="task[_token]"]')->extract(array('value'))[0];
+        $createTaskForm['task[title]'] = $titleTest;
+        $createTaskForm['task[content]'] = $contentTest;
 
-        $client->request('POST', "/tasks/create", [
-            'task' => [
-                'title' => $title,
-                'content' => $content,
-                '_token' => $token
-            ]
-        ]);
-
-        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $crawler = $client->submit($createTaskForm);
 
         $crawler = $client->followRedirect();
 
-        $this->assertSame($title, $crawler->filter('h4 a')->last()->text());
-        $this->assertSame($content, $crawler->filter('.caption p')->last()->text());
+        $this->assertStringContainsString('La tâche a été bien été ajoutée.', $crawler->filter('div.alert.alert-success')->text(null, false));
+        $this->assertSame($titleTest, $crawler->filter('h4 a')->last()->text(null, false));
+        $this->assertSame($contentTest, $crawler->filter('.caption p')->last()->text(null, false));
     }
 
     public function testEditAction()
@@ -77,60 +94,70 @@ class TaskActionsTest extends WebTestCase
 
         $task = end($tasks);
 
-        $client->request('GET', '/tasks/' . $task->getId() . '/edit');
-
-        $this->assertSame(302, $client->getResponse()->getStatusCode());
-
         $loginUtility = new LoginUtility($client);
 
         $loginUtility->login();
 
         $crawler = $client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
-        $token = $crawler->filter('input[name="task[_token]"]')->extract(array('value'))[0];
+        $createTaskForm = $crawler->selectButton("Modifier")->form();
+        $titleTest = $createTaskForm['task[title]']->getValue();
+        $contentTest = $createTaskForm['task[content]']->getValue();
 
-        $client->request('POST', '/tasks/' . $task->getId() . '/edit', [
-            'task' => [
-                'title' => $task->getTitle(),
-                'content' => $task->getContent(),
-                '_token' => $token
-            ]
-        ]);
-
-        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $crawler = $client->submit($createTaskForm);
 
         $crawler = $client->followRedirect();
 
-        $this->assertSame($task->getTitle(), $crawler->filter('h4 a')->last()->text());
-        $this->assertSame($task->getContent(), $crawler->filter('.caption p')->last()->text());
+        $this->assertStringContainsString('La tâche a bien été modifiée.', $crawler->filter('div.alert.alert-success')->text(null, false));
+        $this->assertSame($titleTest, $crawler->filter('h4 a')->last()->text());
+        $this->assertSame($contentTest, $crawler->filter('.caption p')->last()->text());
     }
 
-    public function testToggleTaskAction()
+    public function testToggleAction()
     {
         $client = static::createClient();
-
-        $entityManager = $client->getContainer()
-            ->get('doctrine')
-            ->getManager();
-
-        $tasks = $entityManager
-            ->getRepository(Task::class)
-            ->findAll();
-
-        $task = end($tasks);
-
-        $client->request('GET', '/tasks/' . $task->getId() . '/toggle');
-
-        $this->assertSame(302, $client->getResponse()->getStatusCode());
 
         $loginUtility = new LoginUtility($client);
 
         $loginUtility->login();
 
-        $client->request('GET', '/tasks/' . $task->getId() . '/toggle');
+        $crawler = $client->request('GET', '/tasks');
+
+        $createTaskForm = $crawler->selectButton("Marquer comme faite")->last()->form();
+
+        $crawler = $client->submit($createTaskForm);
 
         $crawler = $client->followRedirect();
 
-        $this->assertSame('Superbe ! La tâche ' . $task->getTitle() . ' a bien été marquée comme faite.', $crawler->filter('.alert-success')->text(null, true));
+        $this->assertStringContainsString('La tâche Un titre a bien été marquée comme faite.', $crawler->filter('div.alert.alert-success')->text(null, false));
+    }
+
+    public function testDeleteAction()
+    {
+        $client = static::createClient();
+
+        $loginUtility = new LoginUtility($client);
+
+        $loginUtility->login('userTest');
+
+        $crawler = $client->request('GET', '/tasks');
+
+        $createTaskForm = $crawler->selectButton("Supprimer")->last()->form();
+
+        $crawler = $client->submit($createTaskForm);
+
+        $crawler = $client->followRedirect();
+
+        $this->assertStringContainsString('Vous n\'avez pas la permission d\'effectuer cette action.', $crawler->filter('div.alert.alert-danger')->text(null, false));
+
+        $loginUtility->login();
+
+        $createTaskForm = $crawler->selectButton("Supprimer")->last()->form();
+
+        $crawler = $client->submit($createTaskForm);
+
+        $crawler = $client->followRedirect();
+
+        $this->assertStringContainsString('La tâche a bien été supprimée.', $crawler->filter('div.alert.alert-success')->text(null, false));
     }
 }
