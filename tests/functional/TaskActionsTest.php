@@ -140,11 +140,11 @@ class TaskActionsTest extends WebTestCase
 
         $loginUtility->login('userTest');
 
-        $crawler = $client->request('GET', '/tasks');
+        $crawler = $client->request('GET', '/tasks?isDone=1');
 
-        $createTaskForm = $crawler->selectButton("Supprimer")->last()->form();
+        $deleteTaskForm = $crawler->selectButton("Supprimer")->last()->form();
 
-        $crawler = $client->submit($createTaskForm);
+        $crawler = $client->submit($deleteTaskForm);
 
         $crawler = $client->followRedirect();
 
@@ -152,9 +152,11 @@ class TaskActionsTest extends WebTestCase
 
         $loginUtility->login();
 
-        $createTaskForm = $crawler->selectButton("Supprimer")->last()->form();
+        $crawler = $client->request('GET', '/tasks?isDone=1');
 
-        $crawler = $client->submit($createTaskForm);
+        $deleteTaskForm = $crawler->selectButton("Supprimer")->last()->form();
+
+        $crawler = $client->submit($deleteTaskForm);
 
         $crawler = $client->followRedirect();
 
