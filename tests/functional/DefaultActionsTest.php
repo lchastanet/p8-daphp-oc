@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Functional;
 
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -14,6 +14,10 @@ class DefaultActionsTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
+
+        $crawler = $client->followRedirect();
+
+        $this->assertSame("Se connecter", $crawler->filter('button')->text());
     }
 
     public function testIndexActionAuthenticated()
@@ -24,8 +28,10 @@ class DefaultActionsTest extends WebTestCase
 
         $loginUtility->login();
 
-        $client->request('GET', '/');
+        $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $this->assertStringContainsString("Se déconnecter", $crawler->text(null, false));
     }
 }

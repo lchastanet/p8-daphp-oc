@@ -15,7 +15,7 @@ class LoginUtility
         $this->client = $client;
     }
 
-    public function login()
+    public function login($userName = 'admin')
     {
         $entityManager = $this->client->getContainer()
             ->get('doctrine')
@@ -24,7 +24,7 @@ class LoginUtility
         $user = $entityManager
             ->getRepository(User::class)
             ->findOneBy([
-                'username' => 'admin'
+                'username' => $userName
             ]);
 
         $session = $this->client->getContainer()->get('session');

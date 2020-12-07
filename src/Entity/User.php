@@ -118,6 +118,11 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return void
+     */
     public function eraseCredentials()
     {
     }
