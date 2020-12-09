@@ -6,8 +6,17 @@ use App\Entity\User;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\TaskController
+ * @covers \App\Entity\User
+ */
 class UserControllerTest extends WebTestCase
 {
+    /**
+     * test if the users list page is reachable
+     *
+     * @return void
+     */
     public function testListAction()
     {
         $client = static::createClient();
@@ -21,6 +30,11 @@ class UserControllerTest extends WebTestCase
         $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * test if a user can be created
+     *
+     * @return void
+     */
     public function testCreateAction()
     {
         $client = static::createClient();
@@ -61,6 +75,11 @@ class UserControllerTest extends WebTestCase
         $this->assertSame(302, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * test if a user can be edited
+     *
+     * @return void
+     */
     public function testEditAction()
     {
         $client = static::createClient();
