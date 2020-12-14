@@ -6,8 +6,17 @@ use App\Entity\Task;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\TaskController
+ * @covers \App\Entity\Task
+ */
 class TaskActionsTest extends WebTestCase
 {
+    /**
+     * test list tasks page when logged as admin
+     *
+     * @return void
+     */
     public function testListActionAsAdmin()
     {
         $client = static::createClient();
@@ -23,6 +32,11 @@ class TaskActionsTest extends WebTestCase
         $this->assertStringContainsString('Créer un utilisateur', $crawler->text(null, true));
     }
 
+    /**
+     * test list tasks page when logged as user
+     *
+     * @return void
+     */
     public function testListActionAsUser()
     {
         $client = static::createClient();
@@ -54,6 +68,11 @@ class TaskActionsTest extends WebTestCase
     }
 
 
+    /**
+     * test create task form and process
+     *
+     * @return void
+     */
     public function testCreateAction()
     {
         $client = static::createClient();
@@ -80,6 +99,11 @@ class TaskActionsTest extends WebTestCase
         $this->assertSame($contentTest, $crawler->filter('.caption p')->last()->text(null, false));
     }
 
+    /**
+     * test edit task form and process
+     *
+     * @return void
+     */
     public function testEditAction()
     {
         $client = static::createClient();
@@ -113,6 +137,11 @@ class TaskActionsTest extends WebTestCase
         $this->assertSame($contentTest, $crawler->filter('.caption p')->last()->text());
     }
 
+    /**
+     * test toggle status of an task
+     *
+     * @return void
+     */
     public function testToggleAction()
     {
         $client = static::createClient();
@@ -132,6 +161,11 @@ class TaskActionsTest extends WebTestCase
         $this->assertStringContainsString('La tâche Un titre a bien été marquée comme faite.', $crawler->filter('div.alert.alert-success')->text(null, false));
     }
 
+    /**
+     * test delete last done task
+     *
+     * @return void
+     */
     public function testDeleteAction()
     {
         $client = static::createClient();

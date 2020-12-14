@@ -2,11 +2,18 @@
 
 namespace App\Tests\unit\Controller;
 
-use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\SecurityController
+ */
 class SecurityControllerTest extends WebTestCase
 {
+    /**
+     * test if the login page is reachable
+     *
+     * @return void
+     */
     public function testLoginAction()
     {
         $client = static::createClient();
@@ -15,26 +22,4 @@ class SecurityControllerTest extends WebTestCase
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
-
-    // public function testLoginCheck()
-    // {
-    //     $client = static::createClient();
-
-    //     $client->request('POST', "/login_check", ['_username' => 'admin', '_password' => 'admin']);
-
-    //     $this->assertSame(302, $client->getResponse()->getStatusCode());
-    // }
-
-    // public function testLogoutCheck()
-    // {
-    //     $client = static::createClient();
-
-    //     $loginUtility = new LoginUtility($client);
-
-    //     $loginUtility->login();
-
-    //     $client->request('GET', "/logout");
-
-    //     $this->assertSame(302, $client->getResponse()->getStatusCode());
-    // }
 }

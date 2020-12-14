@@ -6,8 +6,17 @@ use App\Entity\User;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\UserController
+ * @covers \App\Entity\User
+ */
 class UserActionsTest extends WebTestCase
 {
+    /**
+     * test if list is not accessible with role USER and accessible with role ADMIN
+     *
+     * @return void
+     */
     public function testListAction()
     {
         $client = static::createClient();
@@ -27,6 +36,11 @@ class UserActionsTest extends WebTestCase
         $this->assertStringContainsString('Liste des utilisateurs', $crawler->text(null, true));
     }
 
+    /**
+     * test add user form and process
+     *
+     * @return void
+     */
     public function testCreateAction()
     {
         $client = static::createClient();
@@ -58,6 +72,11 @@ class UserActionsTest extends WebTestCase
         $this->assertStringContainsString($email, $crawler->text(null, true));
     }
 
+    /**
+     * test add user form and process
+     *
+     * @return void
+     */
     public function testEditAction()
     {
         $client = static::createClient();

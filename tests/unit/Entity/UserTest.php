@@ -6,8 +6,16 @@ use App\Entity\User;
 use App\Entity\Task;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Entity\User
+ */
 class UserTest extends WebTestCase
 {
+    /**
+     * test id of a user
+     *
+     * @return void
+     */
     public function testId()
     {
         $user = new User();
@@ -16,6 +24,11 @@ class UserTest extends WebTestCase
         $this->assertEquals($idTest, $user->getId());
     }
 
+    /**
+     * test username of a user
+     *
+     * @return void
+     */
     public function testUsername()
     {
         $user = new User();
@@ -25,6 +38,11 @@ class UserTest extends WebTestCase
         $this->assertEquals($username, $user->getUsername());
     }
 
+    /**
+     * test password of a user
+     *
+     * @return void
+     */
     public function testPassword()
     {
         $user = new User();
@@ -33,6 +51,11 @@ class UserTest extends WebTestCase
         $this->assertEquals($password, $user->getPassword());
     }
 
+    /**
+     * test email of a user
+     *
+     * @return void
+     */
     public function testEmail()
     {
         $user = new User();
@@ -42,6 +65,11 @@ class UserTest extends WebTestCase
         $this->assertEquals($email, $user->getEmail());
     }
 
+    /**
+     * test if a task can be added to a user
+     *
+     * @return void
+     */
     public function testAddTask()
     {
         $user = new User();
@@ -51,6 +79,11 @@ class UserTest extends WebTestCase
         $this->assertEquals($task, $user->getTasks()[0]);
     }
 
+    /**
+     * test if a task can be remove from a user
+     *
+     * @return void
+     */
     public function testRemoveTask()
     {
         $user = new User();
@@ -63,6 +96,11 @@ class UserTest extends WebTestCase
         $this->assertEquals([], $user->getTasks()->toArray());
     }
 
+    /**
+     * test role of a user
+     *
+     * @return void
+     */
     public function testRole()
     {
         $user = new User();

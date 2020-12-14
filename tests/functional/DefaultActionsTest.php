@@ -5,8 +5,16 @@ namespace App\Tests\Functional;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\DefaultController
+ */
 class DefaultActionsTest extends WebTestCase
 {
+    /**
+     * test redirection when trying to get home when unauthenticated
+     *
+     * @return void
+     */
     public function testIndexActionUnauthenticated()
     {
         $client = static::createClient();
@@ -20,6 +28,11 @@ class DefaultActionsTest extends WebTestCase
         $this->assertSame("Se connecter", $crawler->filter('button')->text());
     }
 
+    /**
+     * test homepage when authenticated
+     *
+     * @return void
+     */
     public function testIndexActionAuthenticated()
     {
         $client = static::createClient();

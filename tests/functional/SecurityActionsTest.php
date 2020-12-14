@@ -5,8 +5,16 @@ namespace App\Tests\Functional;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\SecurityController
+ */
 class SecurityActionsTest extends WebTestCase
 {
+    /**
+     * test a successfull login attempt
+     *
+     * @return void
+     */
     public function testLoginOk()
     {
         $client = static::createClient();
@@ -26,6 +34,11 @@ class SecurityActionsTest extends WebTestCase
         $this->assertStringContainsString('Créer une nouvelle tâche', $crawler->text(null, false));
     }
 
+    /**
+     * test a failed login attempt
+     *
+     * @return void
+     */
     public function testLoginKo()
     {
         $client = static::createClient();
@@ -45,6 +58,11 @@ class SecurityActionsTest extends WebTestCase
         $this->assertStringContainsString('Invalid credentials.', $crawler->text(null, false));
     }
 
+    /**
+     * test the logout system
+     *
+     * @return void
+     */
     public function testLogout()
     {
         $client = static::createClient();

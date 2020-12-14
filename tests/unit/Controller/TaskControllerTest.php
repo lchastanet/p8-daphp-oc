@@ -6,8 +6,17 @@ use App\Entity\Task;
 use App\Tests\LoginUtility;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \App\Controller\TaskController
+ * @covers \App\Entity\Task
+ */
 class TaskControllerTest extends WebTestCase
 {
+    /**
+     * test if the tasks list page is reachable
+     *
+     * @return void
+     */
     public function testListAction()
     {
         $client = static::createClient();
@@ -21,6 +30,11 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * test if a task can be created
+     *
+     * @return void
+     */
     public function testCreateAction()
     {
         $client = static::createClient();
@@ -48,6 +62,11 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame($title, $crawler->filter('h4 a')->last()->text());
     }
 
+    /**
+     * test if a task can be edited
+     *
+     * @return void
+     */
     public function testEditAction()
     {
         $client = static::createClient();
@@ -83,6 +102,11 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame($task->getTitle(), $crawler->filter('h4 a')->last()->text());
     }
 
+    /**
+     * test if a task can be set to done or not
+     *
+     * @return void
+     */
     public function testToggleTaskAction()
     {
         $client = static::createClient();
@@ -110,6 +134,11 @@ class TaskControllerTest extends WebTestCase
         $this->assertNotEquals($taskNotModified, $taskModified);
     }
 
+    /**
+     * test if a task can be deleted
+     *
+     * @return void
+     */
     public function testDeleteTaskAction()
     {
         $client = static::createClient();
