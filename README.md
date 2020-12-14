@@ -24,13 +24,13 @@ DATABASE_URL=mysql://username:password@127.0.0.1:3306/db_name
 Then run the following command to create database
 
 ```shell
-php bin/console doctrine:database:create
+$ php bin/console doctrine:database:create
 ```
 
 Then load the initial dataset into database
 
 ```shell
-php bin/console doctrine:fixtures:load
+$ php bin/console doctrine:fixtures:load
 ```
 
 And finally run the dev server to test app
@@ -38,17 +38,17 @@ And finally run the dev server to test app
 - if you have installed the symfony cli tool :
 
 ```shell
-symfony serve
+$ symfony serve
 ```
 
 - if you don't have installed the symfony cli tool :
 
 ```shell
-php -S localhost:8000 -t public
+$ php -S localhost:8000 -t public
 ```
 
 (Optional) if you want to launch manually tests :
 
 ```shell
-vendor/bin/phpunit
+$ vendor/bin/phpunit
 ```
